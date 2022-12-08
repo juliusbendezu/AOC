@@ -22,6 +22,7 @@ if (!year) {
     return;
 }
 
+console.log(`Year ${year}`)
 if (day) {
     runDay(year, day)
 } else {
