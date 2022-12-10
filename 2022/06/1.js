@@ -7,7 +7,7 @@ exports.solution = () => {
     for (let i = 4; i < datastream.length; i++) {
         const current = datastream[i];
         if (lastFour.length === new Set(lastFour).size) { //Then lastFour contains only uniques
-            console.log(current);
+            // console.log(current);
             return i;
         }
         lastFour.shift();

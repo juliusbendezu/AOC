@@ -41,7 +41,7 @@ exports.solution = () => {
     fileTree.root = fileTree.children.pop();
     delete fileTree.children;
 
-    console.log(JSON.stringify(fileTree, null, fileTree.depth));
+    // console.log(JSON.stringify(fileTree, null, fileTree.depth));
 
     const sizeLimit = 100_000;
     const findDirsUnderSizeLimit = (node) => {

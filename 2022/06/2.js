@@ -7,7 +7,7 @@ exports.solution = () => {
     for (let i = 14; i < datastream.length; i++) {
         const current = datastream[i];
         if (lastFourteen.length === new Set(lastFourteen).size) { //Then lastFourteen contains only uniques
-            console.log(current);
+            // console.log(current);
             return i;
         }
         lastFourteen.shift();
