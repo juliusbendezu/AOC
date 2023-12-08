@@ -1,6 +1,8 @@
-const { readString, readArr } = require('./readfile')
+const { readString, readArr } = require("./readfile");
+const { log } = require("./debug");
 
 module.exports = {
-    readString,
-    readArr
-}
+  readString,
+  readArr,
+  log,
+};
