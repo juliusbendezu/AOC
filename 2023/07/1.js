@@ -1,7 +1,7 @@
 const { readArr, log } = require("../../utils");
 
 exports.solution = () => {
-  const ranks = {
+  const types = {
     fiveOfAKind: 7,
     fourOfAKind: 6,
     fullHouse: 5,
@@ -11,53 +11,61 @@ exports.solution = () => {
     highCard: 1,
   };
   const findType = (hand) => {
-    //TODO replace with character counting because this is too flaky
-    //Test these extensively using of_a_kind.txt
-    const fiveOfAKind = /(\w).*\1.*\1.*\1.*\1/;
-    const fourOfAKind = /(\w).*\1.*\1.*\1/;
-    //fullHouse
-    const threeOfAKind = /(\w).*\1.*\1/;
-    //twoPair
-    const onePair = /(\w).*\1/;
+    const count = (hand) =>
+      hand.split("").reduce(
+        //Comma operator magic, the first expression is evaluated, the second is returned
+        (counts, card) => ((counts[card] = (counts[card] || 0) + 1), counts),
+        {}
+      );
 
-    if (fiveOfAKind.test(hand)) {
-      return ranks.fiveOfAKind;
+    const cardCounts = count(hand);
+    const uniqueCards = Object.values(cardCounts);
+
+    switch (uniqueCards.length) {
+      case 1:
+        return types.fiveOfAKind;
+      case 2:
+        return uniqueCards.find((count) => count === 4)
+          ? types.fourOfAKind
+          : types.fullHouse;
+      case 3:
+        return uniqueCards.find((count) => count === 3)
+          ? types.threeOfAKind
+          : types.twoPair;
+      case 4:
+        return types.onePair;
+      case 5:
+        return types.highCard;
     }
-    if (fourOfAKind.test(hand)) {
-      return ranks.fourOfAKind;
-    }
-    if (threeOfAKind.test(hand)) {
-      log(hand.match(threeOfAKind));
-      const part = hand.replace(hand.match(threeOfAKind)[0]);
-      console.log(part);
-      return onePair.test(part) ? ranks.fullHouse : ranks.threeOfAKind;
-    }
-    if (onePair.test(hand)) {
-      const part = hand.replace(onePair, "");
-      return onePair.test(part) ? ranks.twoPair : ranks.onePair;
-    }
-    return ranks.highCard;
   };
 
+  //Lowest first
   const compareHands = (h1, h2) => {
-    //First by rank, then by first highest num, maybe replace AKQT with numbers or just add some rules for those
-    let winner; //Perhaps, or some other return type?
-    return winner;
+    const value = (card) => {
+      const values = { A: 14, K: 13, Q: 12, J: 11, T: 10 };
+      return values[card] || Number(card);
+    };
+
+    const rankDiff = h1.type - h2.type;
+    if (rankDiff !== 0) return rankDiff;
+
+    for (let i = 0; i < h1.hand.length; i++) {
+      const card1 = h1.hand[i];
+      const card2 = h2.hand[i];
+      const highestCardDiff = value(card1) - value(card2);
+
+      if (highestCardDiff !== 0) return highestCardDiff;
+    }
+    return 0;
   };
 
   //Create an object with full hand, (type), rank
-  const hands = readArr("./full_house.txt")
+  const hands = readArr("./input.txt")
     .map((l) => l.split(" "))
-    .map(([hand, bid]) => {
-      log(`Hand ${hand} evaluated as rank ${findType(hand)}`);
-    });
+    .map(([hand, bid]) => ({ hand, bid, type: findType(hand) }))
+    .sort(compareHands)
+    .map((hand, i) => ((hand.rank = i + 1), hand));
 
-  log(findType("66666"));
-  log(findType("22223"));
-  log(findType("22AAA"));
-  log(findType("22234"));
-  log(findType("22334"));
-  log(findType("22345"));
-  log(findType("12345"));
-  // compare types and find rank between hands
+  log(hands);
+  return hands.reduce((sum, { bid, rank }) => (sum += rank * bid), 0);
 };
