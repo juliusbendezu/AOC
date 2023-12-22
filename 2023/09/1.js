@@ -7,8 +7,8 @@ exports.solution = () => {
   const findSequences = (history) => {
     log("Finding sequences of history", history);
     const findNextSequence = (history) => {
-      const [first, ...rest] = history;
-      return rest.map((n, i, arr) => n - (arr[i - 1] || first));
+      const [_, ...rest] = history;
+      return rest.map((n, i) => n - history[i]); //history[i] is previous since we start from index 1
     };
     const isAllZeroSequence = (s) => s.every((n) => n === 0);
 
@@ -39,6 +39,5 @@ exports.solution = () => {
 
   const values = histories.map((h) => findNextValue(findSequences(h)));
   log(values);
-  //1881647487 is too low
   return values.reduce((sum, curr) => (sum += curr), 0);
 };
